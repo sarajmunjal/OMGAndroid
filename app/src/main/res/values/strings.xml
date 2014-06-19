@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">OMGAndroid</string>
+    <string name="textview">Hi there Saraj!</string>
+    <string name="action_settings">Settings</string>
+    <string name="button">Update the TextView</string>
+    <string name="hint">Start typing your name</string>
+</resources>
