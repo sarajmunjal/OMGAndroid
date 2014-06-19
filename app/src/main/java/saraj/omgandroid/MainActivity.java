@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +26,6 @@ import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 
@@ -38,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     private static final String PREFS = "prefs";
     private static final String PREF_NAME = "name";
     SharedPreferences mSharedPreferences;
+    MainDialogFragment mainDialogFragment;
 
 
 
@@ -49,7 +52,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         mainTextView = (TextView) findViewById(R.id.main_textview);
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
-        mainTextView.setText("Set in Java to a very very very very very very very very long string here");
         mainEditText = (EditText) findViewById(R.id.main_edittext);
         mainListView = (ListView) findViewById(R.id.main_listview);
         mArrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, mNameList);
@@ -59,9 +61,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
     }
 
     public void displayWelcome(){
-        mSharedPreferences = getSharedPreferences(PREFS,MODE_PRIVATE);
 
-        String name = mSharedPreferences.getString(PREF_NAME,"");
+        mSharedPreferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+
+        String name = mSharedPreferences.getString(PREF_NAME, "");
         if(name.length() != 0){
             // If the name is valid, display a Toast welcoming them
             Toast.makeText(this, "Welcome back, " + name + "!", Toast.LENGTH_LONG).show();
@@ -71,40 +74,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Adap
         {
 
             // otherwise, show a dialog to ask for their name
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle("Hello!");
-            alert.setMessage("What is your name?");
-
-            // Create EditText for entry
-            final EditText input = new EditText(this);
-            alert.setView(input);
-
-            // Make an "OK" button to save the name
-            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int whichButton) {
-
-                    // Grab the EditText's input
-                    String inputName = input.getText().toString();
-
-                    // Put it into memory (don't forget to commit!)
-                    SharedPreferences.Editor e = mSharedPreferences.edit();
-                    e.putString(PREF_NAME, inputName);
-                    e.commit();
-
-                    // Welcome the new user
-                    Toast.makeText(getApplicationContext(), "Welcome, " + inputName + "!", Toast.LENGTH_LONG).show();
-                }
-            });
-
-            // Make a "Cancel" button
-            // that simply dismisses the alert
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int whichButton) {}
-            });
-
-            alert.show();
+            FragmentTransaction ft= getFragmentManager().beginTransaction();
+            mainDialogFragment = new MainDialogFragment();
+            mainDialogFragment.setPrefStuff(getApplicationContext(),PREFS,PREF_NAME);
+            ft.add(mainDialogFragment,"Tag");
+            ft.commit();
         }
     }
 
